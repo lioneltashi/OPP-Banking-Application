@@ -26,7 +26,7 @@ class Account:
 
     def withdraw(self, amount):
         if amount > self.balance: # using conditional statement so that if the amount you typed is more than the balance left in the account it will show that it is insufficient.
-            print("Insufficient funds!")
+            print("Insufficient amount!")
         else:
             self.balance -= amount # subtracting the balance in the account by the amount the user put in.
             print(f"Withdrew Nu {amount}. New balance: Nu {self.balance}")
@@ -36,7 +36,7 @@ class Account:
 
     def transfer(self, target_account, amount): 
         if amount > self.balance: # if the amount you want to transfer is more than the balance you have. 
-            print("Insufficient funds!")
+            print("Insufficient amount!")
         elif target_account is None: # if nothing is written 
             print("Target account does not exist!")
         else:
@@ -44,16 +44,16 @@ class Account:
             target_account.balance += amount # adding the money to a target account
             print(f"Transferred Nu {amount} to account number {target_account.account_number}. balance left: Nu {self.balance}")
 
- #the following two classes are inherited from the Account class and initializing the base class with "Personal" or "Business" as the account type.
-class PersonalAccount(Account): # Inheritance
+ #the following two classes are inherited from the Account class and initializing the base class with "Savings" or "Business" as the account type.
+class SavingsAccount(Account): # Inheritance
     def __init__(self, account_number, password, balance=0.0):
-        super().__init__(account_number, password, "Personal", balance)
+        super().__init__(account_number, password, "Savings", balance)
 
 class BusinessAccount(Account): # Inheritance
     def __init__(self, account_number, password, balance=0.0):
         super().__init__(account_number, password, "Business", balance)
 
-class BankingApp: # This class is to Manage the banking operations and account data
+class MyBankingApp: # This class is to Manage the banking operations and account data
     accounts_file = "accounts.txt" # accounts_file holds the name of the file ("accounts.txt") to store account data.
 
     def __init__(self): # Loads accounts from the file upon initialization.
@@ -67,8 +67,8 @@ class BankingApp: # This class is to Manage the banking operations and account d
         with open(self.accounts_file, "r") as f:#  Opens the file self.accounts_file (i.e., "accounts.txt") in read mode ("r") and uses a with statement to ensure the file is properly closed after its contents are read.
             for line in f: 
                 account_number, password, account_type, balance = line.strip().split(",") # removes any whitespace from the line and then splits the line.
-                if account_type == "Personal": 
-                    accounts[account_number] = PersonalAccount(account_number, password, float(balance))  # Create a PersonalAccount object and add it to the dictionary if the account type is "Personal".
+                if account_type == "Savings": 
+                    accounts[account_number] = SavingsAccount(account_number, password, float(balance))  # Create a SavingsAccount object and add it to the dictionary if the account type is "Savings".
                 elif account_type == "Business": 
                     accounts[account_number] = BusinessAccount(account_number, password, float(balance)) # Create a BusinessAccount object and add it to the dictionary if the account type is "Business".
         return accounts
@@ -79,23 +79,23 @@ class BankingApp: # This class is to Manage the banking operations and account d
                  # Writing the account information to the file like the format below.
                 f.write(f"{account.account_number},{account.password},{account.account_type},{account.balance}\n") # Each line in the file represents one account, with fields separated by commas.
 
-    def generate_account_number(self):
+    def create_account_number(self):
         return ''.join(random.choices(string.digits, k=9)) # Generates a random 9-digit account number
 
-    def generate_password(self):
+    def create_password(self):
         return ''.join(random.choices(string.ascii_letters + string.digits, k=7)) #  Generates a random 7-character password.
 
     def create_account(self, account_type):
-        account_number = self.generate_account_number() # Generates a unique account number. 
-        password = self.generate_password() # Generate a random password.
+        account_number = self.create_account_number() # Generates a unique account number. 
+        password = self.create_password() # Generate a random password.
     
-    # Checking the account type and creating the corresponding account object(PersonalAccount and Business).
-        if account_type == "Personal":
-            account = PersonalAccount(account_number, password)
+    # Checking the account type and creating the corresponding account object(SavingsAccount and Business).
+        if account_type == "Savings":
+            account = SavingsAccount(account_number, password)
         elif account_type == "Business":
             account = BusinessAccount(account_number, password)
         else:
-            print("Invalid account type!") # Printing an error message if the account typed is invalid and return.
+            print("Invalid account type") # Printing an error message if the account typed is invalid and return.
             return
 
         self.accounts[account_number] = account # Adding the new account to the self.accounts dictionary.
@@ -110,7 +110,7 @@ class BankingApp: # This class is to Manage the banking operations and account d
             print("Login successful.")
             return account
         else:
-            print("Invalid account number or password.")
+            print(" Your account number or password is invalid.")
             return None
 
     def delete_account(self, account_number): # initializing delete account.
@@ -127,44 +127,44 @@ class BankingApp: # This class is to Manage the banking operations and account d
         return self.accounts.get(account_number) # Retrieving an account object by account number.
 
 def main():
-    app = BankingApp() # initializing banking app
+    app = MyBankingApp() # initializing banking app
     while True: # Using while loop to continuously display the main menu and handle user input until the user chooses to exit.
         print("\nPresenting to you the Banking App")
         print("1. Create New Account")
         print("2. Login")
         print("3. Exit")
-        choice = input("Enter your choice: ")
+        choice_1 = input("Enter your choice: ")
 
-        if choice == "1": # letting the user to enter account type and creating it.
-            account_type = input("Enter account type (Personal/Business): ")
+        if choice_1 == "1": # letting the user to enter account type and creating it.
+            account_type = input("Enter account type (Savings/Business): ")
             app.create_account(account_type)
-        elif choice == "2": # letting the user to enter account number and password.
+        elif choice_1 == "2": # letting the user to enter account number and password.
             account_number = input("Enter account number: ")
             password = input("Enter password: ")
             account = app.login(account_number, password)
             if account:
                 while True: # if the login is successful it will allow the user to choose the following sub choice.
-                    print("\n1. Check Balance")
-                    print("2. Deposit")
-                    print("3. Withdraw")
-                    print("4. Transfer")
+                    print("\n1. Check Account Balance")
+                    print("2. Deposit money")
+                    print("3. Withdraw money")
+                    print("4. Transfer money")
                     print("5. Delete Account")
                     print("6. Logout")
-                    sub_choice = input("Enter your choice: ")
+                    choice_2 = input("Please enter your choice: ")
 
-                    if sub_choice == "1":
+                    if choice_2 == "1":
                         account.check_balance() # checking balance
-                    elif sub_choice == "2":
+                    elif choice_2 == "2":
                         amount = float(input("Enter amount to deposit: ")) # depositing amount
                         account.deposit(amount)
                         app.save_accounts() # saving the updated account data.
-                    elif sub_choice == "3":
+                    elif choice_2 == "3":
                         amount = float(input("Enter amount to withdraw: ")) # withdrawing money.
                         account.withdraw(amount)
                         app.save_accounts()
 
                         # transfering money
-                    elif sub_choice == "4":
+                    elif choice_2 == "4":
                         target_account_number = input("Enter target account number: ") 
                         amount = float(input("Enter amount to transfer: "))
                         target_account = app.find_account(target_account_number) # finding the target account.
@@ -172,17 +172,17 @@ def main():
                         app.save_accounts()
 
                         # deleting account
-                    elif sub_choice == "5":
+                    elif choice_2 == "5":
                         app.delete_account(account_number)
                         break
-                    elif sub_choice == "6": # logging out
+                    elif choice_2 == "6": # logging out
                         break
                     else:
                         print("Invalid choice!")
-        elif choice == "3": # Exiting
+        elif choice_1 == "3": # Exiting
             break
         else: # error message
-            print("Invalid choice!")
+            print("Invalid choice")
 
 if __name__ == "__main__":
     main()
